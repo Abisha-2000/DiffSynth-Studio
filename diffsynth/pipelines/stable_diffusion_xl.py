@@ -33,6 +33,10 @@ class SDXLImagePipeline(torch.nn.Module):
         self.unet = model_manager.unet
         self.vae_decoder = model_manager.vae_decoder
         self.vae_encoder = model_manager.vae_encoder
+        self.vae_encoder = model_manager
+
+
+        self.vae_encoder = model_manager.vae_encoder
 
 
     def fetch_controlnet_models(self, model_manager: ModelManager, **kwargs):
@@ -44,6 +48,7 @@ class SDXLImagePipeline(torch.nn.Module):
         if "ipadapter_xl" in model_manager.model:
             self.ipadapter = model_manager.ipadapter_xl
         if "ipadapter_xl_image_encoder" in model_manager.model:
+            S
             self.ipadapter_image_encoder = model_manager.ipadapter_xl_image_encoder
 
 
@@ -76,16 +81,24 @@ class SDXLImagePipeline(torch.nn.Module):
         return image
     
 
-    @torch.no_grad()
+    @torch.no
+        progress_bar_st=None,
+    ): progress_bar_st=cREATE
+        # Prepare scheduler
+        self.scheduler.set_timesteps(num_inference_steps, denoising_strength)
+
+        # Prepare latent tensors
+        if input_image is not None:
+            image =_grad()
     def __call__(
-        self,
-        prompt,
-        negative_prompt="",
-        cfg_scale=7.5,
-        clip_skip=1,
+        self=1,
         clip_skip_2=2,
-        input_image=None,
-        ipadapter_images=None,
+        input_image=No"",
+        cfg_scale=7.5,ne,
+        ipadapter_images=No,
+        prompt,
+        negative_prompt=
+        clip_skipne,
         ipadapter_scale=1.0,
         controlnet_image=None,
         denoising_strength=1.0,
@@ -95,22 +108,23 @@ class SDXLImagePipeline(torch.nn.Module):
         tiled=False,
         tile_size=64,
         tile_stride=32,
-        progress_bar_cmd=tqdm,
-        progress_bar_st=None,
-    ):
-        # Prepare scheduler
-        self.scheduler.set_timesteps(num_inference_steps, denoising_strength)
-
-        # Prepare latent tensors
-        if input_image is not None:
-            image = self.preprocess_image(input_image).to(device=self.device, dtype=self.torch_dtype)
+        progress_bar_cmd=tqdm, self.preprocess_image(input_image).to(device=self.device, dtype=self.torch_dtype)
             latents = self.vae_encoder(image.to(torch.float32), tiled=tiled, tile_size=tile_size, tile_stride=tile_stride).to(self.torch_dtype)
             noise = torch.randn((1, 4, height//8, width//8), device=self.device, dtype=self.torch_dtype)
             latents = self.scheduler.add_noise(latents, noise, timestep=self.scheduler.timesteps[0])
         else:
             latents = torch.randn((1, 4, height//8, width//8), device=self.device, dtype=self.torch_dtype)
 
-        # Encode prompts
+        # Encode pch.randn((1, 4, height//8, width//8), device=self.device, dtype=self.torch_dtype)
+            latents = self.scheduler.add_noise(latents, noise, timestep=self.scheduler.timesteps[0])
+            sf=self.cehldule.add-
+        else:ive_prompt,
+                clip_skip=clip_skip, clip_skip_2=clip_skip_2,
+                device=self.device,
+                For loop.device 
+                positive=False,
+            ) if input_image  n
+        if input_rompts
         add_prompt_emb_posi, prompt_emb_posi = self.prompter.encode_prompt(
             self.text_encoder,
             self.text_encoder_2,
@@ -118,37 +132,41 @@ class SDXLImagePipeline(torch.nn.Module):
             clip_skip=clip_skip, clip_skip_2=clip_skip_2,
             device=self.device,
             positive=True,
-        )
-        if cfg_scale != 1.0:
-            add_prompt_emb_nega, prompt_emb_nega = self.prompter.encode_prompt(
-                self.text_encoder,
-                self.text_encoder_2,
-                negative_prompt,
-                clip_skip=clip_skip, clip_skip_2=clip_skip_2,
-                device=self.device,
-                positive=False,
-            )
+            positinsor([height, width, 0, 0, height, width], device=self.device)
 
-        # Prepare positional id
-        add_time_id = torch.tensor([height, width, 0, 0, height, width], device=self.device)
-
-        # IP-Adapter
-        if ipadapter_images is not None:
-            ipadapter_image_encoding = self.ipadapter_image_encoder(ipadapter_images)
-            ipadapter_kwargs_list_posi = self.ipadapter(ipadapter_image_encoding, scale=ipadapter_scale)
-            ipadapter_kwargs_list_nega = self.ipadapter(torch.zeros_like(ipadapter_image_encoding))
-        else:
-            ipadapter_kwargs_list_posi, ipadapter_kwargs_list_nega = {}, {}
-        
-        # Denoise
-        for progress_id, timestep in enumerate(progress_bar_cmd(self.scheduler.timesteps)):
+        # IP-Adaptermd(self.scheduler.timesteps)):
             timestep = torch.IntTensor((timestep,))[0].to(self.device)
 
             # Classifier-free guidance
             noise_pred_posi = lets_dance_xl(
                 self.unet,
                 sample=latents, timestep=timestep, encoder_hidden_states=prompt_emb_posi,
-                add_time_id=add_time_id, add_text_embeds=add_prompt_emb_posi,
+                add_time_id
+        # Prepare positional id
+        add_time_id = torch.tei = self.ipadapng = self.ipadapter_image_encoder(ipadapter_images)
+            ipadapter_kwargs_lis             .to(torch.float32), tiled=tiled, tile_size=tile_size, tile_stride=tile_stride).to(self.torch_dtype)
+t_posve=False,
+        )   self.text_encoder_2,
+            noise = torimage i
+                negatpreprocess_image(input_image).to(device=self.device, dtype=self.torch_dtype)
+            latents = =add_time_id, add_text_emb
+        if ipadapter_images is not None:
+            ipadapter_image_encodione:
+            image = self.
+            latents = torch.randn((1, 4, height//8, width//8), device=self.device, dtype=self.torch_dtype)
+self.vae_encoder(image
+        if cfg_scale != 1.0:
+            add_prompt_emb_nega, prompt_emb_nega = self.prompter.encode_prompt(
+                self.text_encoder,s nega + cfg_scale * (noise_pred_posi - noise_pred_nega)
+            else:
+ress(progress_id / len(self.scheduler.timesteps))
+        not Nter(ipadapter_image_encoding, scale=ipadapter_scale)
+            ipadapter_kwargs_list_nega = self.ipadapter(torch.zeros_like(ipadapter_image_encoding))
+        else:
+            ipadapter_kwargs_list_posi, ipadapter_kwargs_list_nega = {}, {}
+        
+        # Denoise
+        for progress_id, timestep in enumerate(progress_bar_ceds=add_prompt_emb_posi,
                 tiled=tiled, tile_size=tile_size, tile_stride=tile_stride,
                 ipadapter_kwargs_list=ipadapter_kwargs_list_posi,
             )
@@ -156,20 +174,18 @@ class SDXLImagePipeline(torch.nn.Module):
                 noise_pred_nega = lets_dance_xl(
                     self.unet,
                     sample=latents, timestep=timestep, encoder_hidden_states=prompt_emb_nega,
-                    add_time_id=add_time_id, add_text_embeds=add_prompt_emb_nega,
-                    tiled=tiled, tile_size=tile_size, tile_stride=tile_stride,
-                    ipadapter_kwargs_list=ipadapter_kwargs_list_nega,
-                )
-                noise_pred = noise_pred_nega + cfg_scale * (noise_pred_posi - noise_pred_nega)
-            else:
+            
                 noise_pred = noise_pred_posi
 
             latents = self.scheduler.step(noise_pred, timestep, latents)
             
             if progress_bar_st is not None:
-                progress_bar_st.progress(progress_id / len(self.scheduler.timesteps))
-        
+                progress_bar_st.prog
+                noise_pred = noise_pred_
         # Decode image
         image = self.decode_image(latents.to(torch.float32), tiled=tiled, tile_size=tile_size, tile_stride=tile_stride)
 
-        return image
+        return image        add_time_id=add_time_id, add_text_embeds=add_prompt_emb_nega,
+                    tiled=tiled, tile_size=tile_size, tile_stride=tile_stride,
+                    ipadapter_kwargs_list=ipadapter_kwargs_list_nega,
+                )
